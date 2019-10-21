@@ -6,9 +6,11 @@ count: false
 
 # Why Rust?
 
-.grey[Santiago Pastorino]
+.grey[Nick Cameron]
 
-.grey[.smaller[WyeWorks, Rustc, Rust Latam, Rails core alumni]]
+.grey[.smaller[PingCAP, Rust core team]]
+
+.grey[.smaller[original slides by Santiago Pastorino]]
 
 ---
 
@@ -16,8 +18,9 @@ count: false
 
 # What is Rust?
 
-- "New" & safe systems programming language
-  - Developed by Mozilla research, v1.0 released in 2015
+- Safe systems programming language
+  - Sponsored by Mozilla Research, v1.0 released in 2015
+  - 2018 edition launched at the end of 2018
 - Multiparadigm
   - Imperative, structured, functional, concurrent, generic, compiled
 - Static strong typing
@@ -29,22 +32,33 @@ count: false
 
 # Who is using Rust?
 
-- **Mozilla** - Stylo, WebRender.
+- **PingCAP** - TiKV, Raft, gRPC
+- **Mozilla** - Firefox (Stylo, WebRender), Servo.
 - **Google** - Fuchsia operating system.
-- **Facebook** - Libra.
+- **Facebook** - Mononoke, Libra.
 - **Amazon** - Firecracker.
 - **Microsoft** - Azure IoT work.
 - **Dropbox** - Storage system.
 
-You can see even more familiar names like **Twitter**, **npm**, **Red Hat**, **Reddit**, **Samsung**, **Cloudflare**, **Gnome**, **Chef**, **Canonical**, **Coursera**, **Tor** and many more.
+You can see even more familiar names like **Twitter**, **npm**, **Red Hat**, **Reddit**, **Samsung**, **Cloudflare**, **Yelp**, **Gnome**, **Chef**, **Canonical**, **Coursera**, **Tor** and many more.
 
-Being used also for **WebAssembly**, **Web APIs**, **Blockchain**, **Networking**, **Embedded**, **Games**. **Native Extensions**, etc.
+---
+
+# Who is using Rust?
+
+> "My biggest compliment to Rust is that it's boring, and this is an amazing compliment."
+
+###### Chris Dickinson, npm
+
+> "All the documentation, the tooling, the community is great - you have all the tools to succeed in writing Rust code."
+
+###### Antonio Verardi, Yelp
 
 ---
 
 <img src="content/images/technology-radar.png" alt="Thoughtworks Radar">
 
-Lot of interest in Rust, some of our clients are already using it.
+"Lot of interest in Rust, some of our clients are already using it."
 
 ---
 
@@ -130,13 +144,6 @@ Lot of interest in Rust, some of our clients are already using it.
 
 .grey[.smaller[Source: https://www.zdnet.com/article/microsoft-70-percent-of-all-security-bugs-are-memory-safety-issues/]]
 
----
-
-# Parallel CSS Styling
-
-<img src="content/images/bug-631527.png" alt="Firefox 8 years bug fixed by Stylo">
-
-Reported 8 years ago
 
 ---
 
@@ -174,317 +181,8 @@ Reported 8 years ago
 | Use after free        | 😢    | 🎉    | 😎   |
 | Data race             | 😢    | 😢    | 😎   |
 
-???
 
 Guaranteed by Rust's ownership system at compile time
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	gift := Gift { .. }
-	channel <- gift
-	gift.open()
-}
-```
-
-<img src="content/images/gift1.jpg" alt="Gift 1">
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	`gift := Gift { .. }`
-	channel <- gift
-	gift.open()
-}
-```
-
-<img src="content/images/gift2.jpg" alt="Gift 2">
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	gift := Gift { .. }
-	`channel <- gift`
-	gift.open()
-}
-```
-
-.col-right[
-```go
-// The other goroutine
-`gift := <- channel`
-gift.open()
-```
-]
-
-<img src="content/images/gift3.jpg" alt="Gift 3">
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	gift := Gift { .. }
-	`channel <- gift`
-	gift.open()
-}
-```
-
-.col-right[
-```go
-// The other goroutine
-`gift := <- channel`
-gift.open()
-```
-]
-
-<img src="content/images/gift4.jpg" alt="Gift 4">
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	gift := Gift { .. }
-	channel <- gift
-	`gift.open()`
-}
-```
-
-.col-right[
-```go
-// The other goroutine
-`gift := <- channel`
-gift.open()
-```
-]
-
-<img src="content/images/gift5.jpg" alt="Gift 5">
-
----
-
-# Every language lets you give
-
-```go
-func foo() {
-	gift := Gift { .. }
-	channel <- gift
-	`gift.open()`
-}
-```
-
-.col-right[
-```go
-// The other goroutine
-gift := <- channel
-`gift.open()` // data race
-```
-]
-
-<img src="content/images/gift5.jpg" alt="Gift 5">
-
----
-# What went wrong?
-
-Two ingredients:
-
-- Mutation
-- Sharing
-
---
-
-Rust's solution:
-
-- Ownership and borrowing
-- Support sharing and mutation
-  - but **not at the same time**
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  channel.send(gift);
-  gift.open();
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, data: T) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift1.jpg" alt="Gift 1">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  `let gift = Gift::new();`
-  channel.send(gift);
-  gift.open();
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, data: T) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift2.jpg" alt="Gift 2">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  `channel.send(gift);`
-  gift.open();
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, data: T) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift3.jpg" alt="Gift 3">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  `channel.send(gift);`
-  gift.open();
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, data: T) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift4.jpg" alt="Gift 4">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  `channel.send(gift);`
-  gift.open();
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, `data: T`) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift6.jpg" alt="Gift 6">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  channel.send(gift);
-  `gift.open();`
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, `data: T`) {
-    // ...
-  }
-}
-```
-]
-
-<img src="content/images/gift6.jpg" alt="Gift 6">
-
----
-
-# Rust lets you take away
-
-```rust
-fn foo() {
-  let gift = Gift::new();
-  channel.send(gift);
-  `gift.open();`
-}
-```
-
-.col-right[
-````rust
-impl<T> Channel<T> {
-  fn send(&mut self, `data: T`) {
-    // ...
-  }
-}
-```
-]
-
-```
-error[E0382]: use of moved value: 'gift'
-  --> src/main.rs:13:4
-     |
-  12 |    channel.send(gift)
-     |                 ---- `value moved here`
-  13 |    gift.open();
-     |    ^^^^ `value used here after move`
-```
 
 ---
 
@@ -497,6 +195,7 @@ error[E0382]: use of moved value: 'gift'
 
 However:
 - “If it compiles, it usually works”
+- Far fewer difficult bugs
 - Far less debugging
     - No data races!
 - Refactoring is safe and painless
@@ -753,43 +452,170 @@ d.push(5);
 
 ---
 
-# To sum up
+# Community
 
-- **Rust is a high perfomant and safe systems programming language**
+- China
+  - Active and growing
+  - PingCAP, Baidu X-Lab, Bilibili, Cryptape, QTUM, Nervos, ...
+  - RustCon Asia
+  - WeChat
+  - 中文: Books, blogs, articles, meetups
+
+---
+
+# Async programming
+
+- **Zero cost abstractions**
+  - minimal runtime
+  - no green threads
+  - minimal allocation
+
+---
+
+# Async programming
+
+- **Futures**
+  - low-level
+  - powerful
+  - combinator programming style
+
+---
+
+# Async programming
+
+- **Futures**
+
+```rust
+stores
+    .and_then(move |(key_data, store)| ...)
+    .map_ok(move |(request, mut response)| {
+        let locks = response.take_locks();
+        if !locks.is_empty() {
+            let pd_client = pd_client.clone();
+            return resolve_locks(locks, pd_client.clone())
+                .map_ok(move |_| request.response_stream(pd_client))
+                .try_flatten_stream();
+        }
+        stream::once(future::ok(response))
+    })
+    .try_flatten()
+```
+
+---
+
+# Async programming
+
+- **`async`/`await`**
+  - ergonomic
+  - low-cost
+  - safe
+
+---
+
+# Async programming
+
+- **`async`/`await`**
+
+```rust
+async fn get(&self, key: Key) -> Result<Option<Value>> {
+    let cluster = self.cluster.connect().await?;
+    cluster.get(key).await
+}
+```
+
+---
+
+# Async programming
+
+- **Async io**
+  - low-level and high-level libraries
+  - platform-native
+
+---
+
+# Async programming
+
+- **Async io**
+
+```rust
+async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
+
+    let listener = TcpListener::bind(addr).await?;
+    let mut incoming = listener.incoming();
+    while let Some(stream) = incoming.next().await {
+        ...
+    }
+    Ok(())
+}
+```
+
+---
+
+# gRPC
+
+- RPC system developed by Google
+- based on http2 and protobufs
+- multi-language support
+- unary and streaming protocols
+- becoming de facto standard
+
+---
+
+# gRPC in Rust
+
+- grpc.rs
+  - low cost
+  - ergonomic
+  - stable
+- Tonic
+  - native Rust
+  - potentially *very* fast
+  - new
+
+---
+
+# gRPC in Rust
+
+- rust-protobuf, Prost, h2
+- Transparent code generation
+
+---
+
+# gRPC in Rust
+
+|   | QPS Rust | QPS C++ | Latency Rust | Latency C++ |
+|---|---:|---:|---:|---:|
+|streaming|8151|8653|209|192|
+|unary (large)|282|157|5250|26988|
+|unary (small)|94024|99139|128909|165768|
+
+Initial benchmarking of Tonic is showing almost 2x QPS of gRPC core.
 
 ---
 
 # To sum up
 
-- Rust is a high perfomant and safe systems programming language
-- **Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, Twitter, Dropbox, etc)**
+- **Rust is a high performance and safe systems programming language**
 
 ---
 
 # To sum up
 
-- Rust is a high perfomant and safe systems programming language
-- Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, Twitter, Dropbox, etc)
+- Rust is a high performance and safe systems programming language
+- **Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, etc)**
+
+---
+
+# To sum up
+
+- Rust is a high performance and safe systems programming language
+- Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, etc)
 - **People love Rust**
   - **Performance**
   - **Memory safety without GC**
   - **Powerful type system**
   - **Modern conveniences**
   - **Community**
-
----
-
-# To sum up
-
-- Rust is a high perfomant and safe systems programming language
-- Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, Twitter, Dropbox, etc)
-- People love Rust
-  - Performance
-  - Memory safety without GC
-  - Powerful type system
-  - Modern conveniences
-  - Community
-- **Give it a try?**
 
 ---
 
@@ -801,5 +627,6 @@ count: false
 
 # Thanks
 
-.grey[Twitter/Github: spastorino]<br/>
-.grey[Email: spastorino@gmail.com]
+.grey[Twitter: nick_r_cameron]<br/>
+.grey[GitHub: nrc]<br/>
+.grey[Email: nick@pingcap.com]
