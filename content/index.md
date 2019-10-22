@@ -10,7 +10,7 @@ count: false
 
 .grey[.smaller[PingCAP, Rust core team]]
 
-.grey[.smaller[original slides by Santiago Pastorino]]
+.grey[.smaller[adapted from slides by Santiago Pastorino]]
 
 ---
 
@@ -19,13 +19,14 @@ count: false
 # What is Rust?
 
 - Safe systems programming language
-  - Sponsored by Mozilla Research, v1.0 released in 2015
+  - Sponsored by Mozilla Research
+  - v1.0 released in 2015
   - 2018 edition launched at the end of 2018
 - Multiparadigm
   - Imperative, structured, functional, concurrent, generic, compiled
 - Static strong typing
   - Inference
-- Emphasizing control, safety, and speed
+- Safe, fast, ergonomic
 - Free and open-source software, MIT License or Apache License 2.0
 
 ---
@@ -459,7 +460,7 @@ d.push(5);
   - PingCAP, Baidu X-Lab, Bilibili, Cryptape, QTUM, Nervos, ...
   - RustCon Asia
   - WeChat
-  - 中文: Books, blogs, articles, meetups
+  - 中文: books, blogs, articles, meetups
 
 ---
 
@@ -491,7 +492,6 @@ stores
     .map_ok(move |(request, mut response)| {
         let locks = response.take_locks();
         if !locks.is_empty() {
-            let pd_client = pd_client.clone();
             return resolve_locks(locks, pd_client.clone())
                 .map_ok(move |_| request.response_stream(pd_client))
                 .try_flatten_stream();
@@ -539,7 +539,6 @@ async fn get(&self, key: Key) -> Result<Option<Value>> {
 
 ```rust
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
-
     let listener = TcpListener::bind(addr).await?;
     let mut incoming = listener.incoming();
     while let Some(stream) = incoming.next().await {
@@ -589,7 +588,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 |unary (large)|282|157|5250|26988|
 |unary (small)|94024|99139|128909|165768|
 
-Initial benchmarking of Tonic is showing almost 2x QPS of gRPC core.
+Initial benchmarking of Tonic is promising.
 
 ---
 
@@ -627,6 +626,6 @@ count: false
 
 # Thanks
 
-.grey[Twitter: nick_r_cameron]<br/>
-.grey[GitHub: nrc]<br/>
 .grey[Email: nick@pingcap.com]
+.grey[GitHub: nrc]<br/>
+.grey[Twitter: nick_r_cameron]<br/>
