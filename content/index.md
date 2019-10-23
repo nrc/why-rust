@@ -145,46 +145,6 @@ You can see even more familiar names like **Twitter**, **npm**, **Red Hat**, **R
 
 .grey[.smaller[Source: https://www.zdnet.com/article/microsoft-70-percent-of-all-security-bugs-are-memory-safety-issues/]]
 
-
----
-
-# Memory safety
-
-|                       | C/C++ |
-| --------------------- | ----- |
-| Control, flexibility  | 🎉    |
-| Minimal to no runtime | 🎉    |
-| Double free           | 😢    |
-| Use after free        | 😢    |
-| Data race             | 😢    |
-
----
-
-# Memory safety
-
-|                       | C/C++ | GC    |
-| --------------------- | ----- | ----- |
-| Control, flexibility  | 🎉    | 🤷‍♀️ |
-| Minimal to no runtime | 🎉    | 🤷‍♀️ |
-| Double free           | 😢    | 🎉    |
-| Use after free        | 😢    | 🎉    |
-| Data race             | 😢    | 😢    |
-
----
-
-# Memory safety
-
-|                       | C/C++ | GC    | Rust |
-| --------------------- | ----- | ----- | ---- |
-| Control, flexibility  | 🎉    | 🤷‍♀️ | 😎   |
-| Minimal to no runtime | 🎉    | 🤷‍♀️ | 😎   |
-| Double free           | 😢    | 🎉    | 😎   |
-| Use after free        | 😢    | 🎉    | 😎   |
-| Data race             | 😢    | 😢    | 😎   |
-
-
-Guaranteed by Rust's ownership system at compile time
-
 ---
 
 # Memory safety: a strict compiler
@@ -552,7 +512,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
 # gRPC
 
-- RPC system developed by Google
+- IPC system developed by Google
 - based on http2 and protobufs
 - multi-language support
 - unary and streaming protocols
@@ -562,7 +522,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
 # gRPC in Rust
 
-- grpc.rs
+- grpc-rs
   - low cost
   - ergonomic
   - stable
@@ -707,9 +667,22 @@ cookies_baked 1
   - **Performance**
   - **Memory safety without GC**
   - **Powerful type system**
-  - **Modern conveniences**
+  - **Tooling**
   - **Community**
 
+---
+
+# To sum up
+
+- Rust is a high performance and safe systems programming language
+- Used by a lot of big names already (Mozilla, Google, Facebook, Amazon, Microsoft, etc)
+- People love Rust
+  - Performance
+  - Memory safety without GC
+  - Powerful type system
+  - Tooling
+  - Community
+- **gRPC**
 ---
 
 class: center
@@ -721,5 +694,7 @@ count: false
 # Thanks
 
 .grey[Email: nick@pingcap.com]
+
 .grey[GitHub: nrc]<br/>
+
 .grey[Twitter: nick_r_cameron]<br/>
