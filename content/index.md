@@ -592,6 +592,100 @@ Initial benchmarking of Tonic is promising.
 
 ---
 
+# Prometheus
+
+* De facto metrics gathering
+* Easily integrates with Grafana
+* Multi-language support
+* Plaintext, human readable output
+* Pull based (Not push, **why?**)
+
+---
+
+# Prometheus
+
+* **Counters**: Single number, only increments
+* **Guage**: Single number, freely mutable
+* **Histogram**: Sum of observations & observation count
+* **Vector** versions of each, for when you want to count the same thing, but on different dimensions.
+
+---
+
+# Prometheus Terms
+
+* **Metrics** provide collectors.
+* **Registries** contain those.
+* **Encoders** can output them.
+
+**Executables** construct a **registry**,
+feed **collectors**, and provide an **encoder**.
+
+**Libraries** don’t.
+
+---
+
+# rust-prometheus
+
+* Highly optimized (nanosecond scale!)
+* PingCAP maintained
+* Used in TiKV
+* Published
+* Easy to use
+* Optional *Static metrics*
+
+---
+
+# Example
+
+```rust
+// Build a registry for collectors.
+let r = `Registry::new`();
+// Build a collector.
+let counter = `Counter::with_opts`(Opts::new(
+    "cookies_baked",
+    "Number of cookies baked."
+)).unwrap();
+// Register it.
+r.`register`(Box::new(counter.clone()))
+    .unwrap();
+// Increment it
+counter.`inc`();
+```
+
+---
+
+# Example
+
+```rust
+let mut buffer = vec![];
+// Gather metrics (Pull!)
+let metric_families = r.`gather`();
+// Build an encoder, encode it
+let encoder = `TextEncoder::new()`;
+encoder.`encode`(
+    &metric_families,
+    &mut buffer
+).unwrap();
+// Print it
+println!("{}", String::from_utf8(buffer)
+    .unwrap());
+```
+
+---
+
+# Example: Output
+
+```rust
+hoverbear@nomad:~/git/prom$ `cargo run`
+    Finished dev [unoptimized + debuginfo] target(s) in 0.01s
+     Running \`target/debug/prom\`
+# HELP cookies_baked Number of cookies baked.
+# TYPE cookies_baked counter
+cookies_baked 1
+```
+
+---
+
 # To sum up
 
 - **Rust is a high performance and safe systems programming language**
